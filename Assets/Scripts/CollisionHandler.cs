@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 
@@ -16,6 +17,7 @@ public class CollisionHandler : MonoBehaviour
     AudioSource audioSource;
 
     bool isControllable = true;
+    bool isCollisionOn = true;
 
 
     private void Start()
@@ -23,11 +25,14 @@ public class CollisionHandler : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-
+    private void Update()
+    {
+        RespondToDebugKeys();
+    }
 
     void OnCollisionEnter(Collision other)
     {
-        if(!isControllable) { return; }
+        if (!isControllable || !isCollisionOn) { return; }
 
         switch (other.gameObject.tag)
         {
@@ -51,7 +56,7 @@ public class CollisionHandler : MonoBehaviour
         }
     }
 
-// these sequence parts could be handle wihthin one manager
+    // these sequence parts could be handle wihthin one manager
 
     private void StartLevelCompleteSequence()
     {
@@ -76,10 +81,10 @@ public class CollisionHandler : MonoBehaviour
     void LoadNextLevel()
     {
         int currentScene = SceneManager.GetActiveScene().buildIndex;
-        int nextScene = currentScene +1;
+        int nextScene = currentScene + 1;
         if (nextScene == SceneManager.sceneCountInBuildSettings)
         {
-            nextScene = 0;    
+            nextScene = 0;
         }
         SceneManager.LoadScene(nextScene);
     }
@@ -89,5 +94,18 @@ public class CollisionHandler : MonoBehaviour
         int currentScene = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene(currentScene);
     }
+
+    void RespondToDebugKeys()
+    {
+        if (Keyboard.current.lKey.wasPressedThisFrame)
+        {
+            LoadNextLevel();
+        }
+        else if (Keyboard.current.cKey.wasPressedThisFrame)
+        {
+            isCollisionOn = !isCollisionOn;
+        }
+    }
+
 }
 
